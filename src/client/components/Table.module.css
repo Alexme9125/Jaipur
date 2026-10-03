@@ -1,0 +1,1029 @@
+.page {
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 24px 20px;
+}
+
+/* ── top bar ── */
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+}
+
+.topLeft {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.wordmark {
+  font-family: var(--font-latin);
+  font-weight: 700;
+  font-size: 22px;
+  letter-spacing: 0.02em;
+  color: var(--text);
+}
+
+.roundLabel {
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+.topRight {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.specPill {
+  height: 30px;
+  padding: 0 14px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  color: var(--jal);
+  border: 1px solid rgba(121, 211, 201, 0.4);
+  white-space: nowrap;
+}
+
+.menuBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: none;
+  place-items: center;
+  font-size: 20px;
+  line-height: 1;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.desktopGroup {
+  display: flex;
+  gap: 10px;
+}
+
+.menuList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sheetText {
+  margin: 0 0 18px;
+  color: var(--text-dim);
+  font-size: 14px;
+}
+
+.sheetBtns {
+  display: flex;
+  gap: 10px;
+}
+
+.logList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.logRow {
+  display: flex;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.logRound {
+  flex: none;
+  font-size: 11px;
+  color: var(--text-dim);
+  padding-top: 2px;
+  white-space: nowrap;
+}
+
+.rulesList {
+  display: flex;
+  flex-direction: column;
+}
+
+.rulesRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 9px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.rulesRow:last-child {
+  border-bottom: none;
+}
+
+.rulesLabel {
+  font-size: 13px;
+  color: var(--text);
+}
+
+.rulesDesc {
+  display: block;
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.rulesVal {
+  flex: none;
+  font-size: 12px;
+  color: var(--jal);
+  font-family: var(--font-latin);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ── stage: centred vertical stack ── */
+
+.stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.stage > * + * {
+  margin-top: 20px;
+}
+
+.table {
+  margin-top: 20px;
+}
+
+.tray {
+  margin-top: 24px;
+}
+
+.bar {
+  margin-top: 16px;
+}
+
+/* ── opponent strip ── */
+
+.oppStrip {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.turnGlow::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--jal);
+  box-shadow: 0 0 10px var(--jal);
+  opacity: 0.8;
+}
+
+.oppFan {
+  display: flex;
+}
+
+.oppFan > * + * {
+  margin-left: -22px;
+}
+
+.oppInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 220px;
+}
+
+.oppTop {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.oppName {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.thinking {
+  color: var(--jal);
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  animation: blink 1.6s ease-in-out infinite;
+  white-space: nowrap;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+.oppStats {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.stat {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.statLabel {
+  font-size: 12px;
+  color: var(--text-dim);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.statVal {
+  font-family: var(--font-latin);
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text);
+}
+
+.statChips {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.timerTrack {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -4px;
+  height: 3px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.timerFill {
+  height: 100%;
+  background: var(--jal);
+  border-radius: 3px;
+}
+
+.timerText {
+  position: absolute;
+  right: 0;
+  top: -4px;
+  transform: translateY(-100%);
+  font-size: 11px;
+  color: var(--jal);
+  font-family: var(--font-latin);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* ── the slab: one piece of glass ── */
+
+.table {
+  position: relative;
+  border-radius: 28px;
+  padding: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 24px 70px rgba(0, 0, 0, 0.35);
+}
+
+/* refraction rim — fully transparent fill, distorts only, 10px wide */
+.table::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  padding: 10px;
+  backdrop-filter: blur(9px) saturate(140%);
+  -webkit-backdrop-filter: blur(9px) saturate(140%);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* jali etch, masked to the rim */
+.table::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  padding: 10px;
+  background-image: var(--jali-tile-gold);
+  background-size: 48px;
+  opacity: 0.14;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+/* in-table header row — mobile only */
+.tableHead {
+  display: none;
+}
+
+.tableRow {
+  display: flex;
+  align-items: center;
+  gap: 26px;
+  position: relative;
+  z-index: 1;
+}
+
+/* rails */
+.rail {
+  width: 260px;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.railRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.railGlyph {
+  color: var(--text-dim);
+  width: 20px;
+  height: 20px;
+  flex: none;
+}
+
+.railGlyph svg {
+  display: block;
+}
+
+.rowChips {
+  display: flex;
+  align-items: center;
+}
+
+.rowChips > * {
+  position: relative;
+}
+
+.rowChips > * + * {
+  margin-left: -12px;
+}
+
+.railCount {
+  font-family: var(--font-latin);
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-left: 10px;
+  white-space: nowrap;
+}
+
+.railEmpty {
+  font-size: 11px;
+  color: var(--text-dim);
+  opacity: 0.6;
+}
+
+/* market */
+.wells {
+  display: flex;
+  gap: 16px;
+}
+
+.well {
+  width: calc(var(--card-w) + 4px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 2px;
+}
+
+.railHead {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--text-dim);
+  margin-bottom: 2px;
+}
+
+/* bonus tiers: one layered pile each, count to the right */
+.bonusRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bonusStack {
+  position: relative;
+  display: block;
+  width: var(--chip-sz);
+  height: calc(var(--chip-sz) + 6px);
+  flex: none;
+}
+
+.bonusLayer {
+  position: absolute;
+  left: 0;
+  top: calc(var(--o) * 2px);
+}
+
+.bonusBack {
+  display: block;
+  width: var(--chip-sz);
+  height: var(--chip-sz);
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--porcelain) 78%, #3a3040);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+.bonusWell {
+  display: block;
+  width: var(--chip-sz);
+  height: var(--chip-sz);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px dashed rgba(255, 255, 255, 0.22);
+}
+
+/* piles inside the table: deck + discard as mini stacks with labels below */
+.piles {
+  display: flex;
+  gap: 26px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.pile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.pileBox {
+  position: relative;
+  width: var(--mini-w);
+  height: var(--mini-h);
+}
+
+.pileBox > * {
+  position: absolute;
+}
+
+.pileBox > :nth-child(2) {
+  left: 3px;
+  top: 3px;
+}
+
+.pileBox > :nth-child(3) {
+  left: 6px;
+  top: 6px;
+}
+
+.emptyWell {
+  width: var(--mini-w);
+  height: var(--mini-h);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px dashed rgba(255, 255, 255, 0.22);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.pileLabel {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+/* ── tray: one centred group ── */
+
+.tray {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  position: relative;
+}
+
+.trayGlow {
+  position: absolute;
+  inset: -14px -22px;
+  border-radius: 26px;
+  border: 1px solid rgba(121, 211, 201, 0.35);
+  box-shadow:
+    0 0 24px rgba(121, 211, 201, 0.15),
+    inset 0 0 24px rgba(121, 211, 201, 0.06);
+  pointer-events: none;
+}
+
+.herdGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  position: relative;
+}
+
+/* compact herd stack: 3px vertical offsets, ≤6 visible, top face up */
+.herdStack {
+  position: relative;
+  width: var(--mini-w);
+  height: calc(var(--mini-h) + 15px);
+  flex: none;
+}
+
+.herdNote {
+  font-size: 11px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+.herdCount {
+  position: absolute;
+  right: -8px;
+  bottom: -4px;
+  background: var(--ink);
+  color: var(--porcelain);
+  font-size: 10px;
+  font-weight: 700;
+  font-family: var(--font-latin);
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  padding: 0 4px;
+  z-index: 5;
+}
+
+.stepperRow {
+  display: flex;
+  align-items: center;
+}
+
+/* hand fan */
+.hand {
+  display: flex;
+  align-items: flex-end;
+  min-height: calc(var(--card-h) + 16px);
+  perspective: 700px;
+}
+
+.handCard {
+  transition: transform 0.2s ease;
+  transform-origin: 50% 100%;
+  --rot: calc(
+    (var(--i) - (var(--n) - 1) / 2) * 8deg / max(var(--n) - 1, 1)
+  );
+  transform: rotate(var(--rot));
+}
+
+.handCard:hover {
+  transform: rotate(0deg) translateY(-8px);
+}
+
+.hand:not(.tight) .handCard + .handCard {
+  margin-left: 10px;
+}
+
+.hand.tight .handCard + .handCard {
+  margin-left: calc(var(--card-w) * (5.2 / max(var(--n) - 1, 1) - 1));
+}
+
+/* your panel */
+.panel {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 18px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  position: relative;
+}
+
+.panelSide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.panelName {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.panelSeals {
+  display: flex;
+  gap: 5px;
+}
+
+.panelStats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.goodsMini {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.goodsItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-family: var(--font-latin);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--c, var(--text-dim));
+}
+
+.goodsItem svg {
+  width: 12px;
+  height: 12px;
+}
+
+/* ── action bar ── */
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 44px;
+  flex-wrap: wrap;
+}
+
+.status {
+  font-size: 13.5px;
+  color: var(--text-dim);
+}
+
+.status em {
+  color: var(--jal);
+  font-style: normal;
+  font-weight: 600;
+}
+
+.barBtns {
+  display: flex;
+  gap: 10px;
+}
+
+/* ── mobile 2×3 rail summary above the table ── */
+
+.mobileRails {
+  display: none;
+}
+
+/* ── short viewports (720–859): shrink tokens + rhythm so the stack fits ── */
+
+@media (max-height: 859px) and (min-width: 721px) {
+  .topbar {
+    padding: 9px 0;
+  }
+
+  .stage > * + * {
+    margin-top: 12px;
+  }
+
+  .table {
+    margin-top: 12px;
+    padding: 14px;
+  }
+
+  .tray {
+    margin-top: 16px;
+  }
+
+  .bar {
+    margin-top: 10px;
+    min-height: 36px;
+  }
+
+  .oppStrip {
+    padding-bottom: 4px;
+  }
+
+  .rail {
+    gap: 6px;
+  }
+
+  .piles {
+    margin-top: 8px;
+  }
+
+  .hand {
+    min-height: calc(var(--card-h) + 10px);
+  }
+
+  .railRow {
+    gap: 7px;
+  }
+}
+
+
+/* ── very short viewports (≤730): shave rhythm so nothing scrolls ── */
+
+@media (max-height: 730px) and (min-width: 721px) {
+  .topbar {
+    padding: 6px 0;
+  }
+
+  .stage > * + * {
+    margin-top: 8px;
+  }
+
+  .table {
+    margin-top: 8px;
+    padding: 10px;
+  }
+
+  .tray {
+    margin-top: 8px;
+  }
+
+  .bar {
+    margin-top: 6px;
+    min-height: 30px;
+  }
+
+  .piles {
+    margin-top: 4px;
+  }
+
+  .railHead {
+    margin-bottom: 0;
+    line-height: 1.2;
+  }
+
+  .oppStrip {
+    padding-bottom: 2px;
+  }
+}
+
+/* ── mobile ── */
+
+@media (max-width: 720px) {
+  .page {
+    padding: 0 10px 14px;
+  }
+
+  .topbar {
+    padding: 10px 0;
+  }
+
+  .wordmark {
+    font-size: 18px;
+  }
+
+  .roundLabel {
+    font-size: 11px;
+  }
+
+  .menuBtn {
+    display: grid;
+  }
+
+  .desktopGroup {
+    display: none;
+  }
+
+  .stage {
+    justify-content: flex-start;
+  }
+
+  .stage > * + * {
+    margin-top: 8px;
+  }
+
+  .table {
+    margin-top: 8px;
+  }
+
+  .tray {
+    margin-top: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  /* keep the glow inside the tray — it must not wash over the table edge */
+  .trayGlow {
+    inset: -6px -10px;
+    border-radius: 18px;
+  }
+
+  .bar {
+    margin-top: 8px;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .herdGroup {
+    gap: 5px;
+  }
+
+  .hand {
+    min-height: calc(var(--card-h) + 4px);
+  }
+
+  .headPileBox {
+    width: 34px;
+    height: 48px;
+  }
+
+  .tableHead {
+    margin-bottom: 6px;
+  }
+
+  .status {
+    width: 100%;
+    text-align: center;
+  }
+
+  .oppStrip {
+    gap: 12px;
+  }
+
+  .oppFan > * + * {
+    margin-left: -26px;
+  }
+
+  .oppInfo {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .oppStats {
+    gap: 10px;
+  }
+
+  /* mobile 2×3 summary grid stays above the table */
+  .mobileRails {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 5px;
+    width: 100%;
+  }
+
+  .mobileRailCell {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.05);
+    font-family: var(--font-latin);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .mobileRailCell .railGlyph {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* the slab */
+  .table {
+    padding: 10px;
+    border-radius: 18px;
+    width: 100%;
+  }
+
+  .table::before,
+  .table::after {
+    padding: 6px;
+    border-radius: 18px;
+  }
+
+  .tableHead {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .headPiles {
+    display: flex;
+    gap: 10px;
+  }
+
+  .headPile {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .headPileBox {
+    position: relative;
+    width: 40px;
+    height: 56px;
+  }
+
+  .headPileBox > * {
+    position: absolute;
+  }
+
+  .headPileBox > :nth-child(2) {
+    left: 2px;
+    top: 2px;
+  }
+
+  .headCount {
+    font-family: var(--font-latin);
+    font-weight: 600;
+    font-size: 11px;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+
+  .headBonus {
+    font-family: var(--font-latin);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-dim);
+    text-align: right;
+    line-height: 1.5;
+  }
+
+  .rail,
+  .piles {
+    display: none;
+  }
+
+  .tableRow {
+    justify-content: center;
+    gap: 0;
+  }
+
+  .wells {
+    gap: 6px;
+  }
+
+  .well {
+    width: calc(var(--card-w) + 2px);
+    padding: 1px;
+  }
+
+  .panel {
+    gap: 12px;
+    padding: 8px 14px;
+  }
+}

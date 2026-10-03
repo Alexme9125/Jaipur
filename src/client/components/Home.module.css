@@ -1,0 +1,239 @@
+.home {
+  position: relative;
+  height: 100%;
+  display: grid;
+  grid-template-columns: minmax(420px, 1fr) minmax(380px, 1fr);
+  align-items: center;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 48px;
+  gap: 40px;
+}
+
+.wordmark {
+  font-family: var(--font-latin);
+  font-weight: 600;
+  font-size: 88px;
+  letter-spacing: -0.035em;
+  line-height: 1;
+  margin: 0;
+}
+
+.subtitle {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  letter-spacing: 0.3em;
+  color: var(--text-dim);
+  margin: 14px 0 40px;
+}
+
+.tiles {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 420px;
+}
+
+.tile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 18px 22px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.05));
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  text-align: left;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+  color: var(--text);
+}
+
+.tile:not(:disabled):hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.32);
+}
+
+.tile:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.tileTitle {
+  font-size: 17px;
+  font-weight: 600;
+  display: block;
+}
+
+.tileSub {
+  font-size: 12px;
+  color: var(--text-dim);
+  display: block;
+  margin-top: 2px;
+}
+
+.tileArrow {
+  font-family: var(--font-latin);
+  font-size: 20px;
+  color: var(--text-dim);
+}
+
+.rulesLink {
+  margin-top: 18px;
+  font-size: 13px;
+  color: var(--text-dim);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 2px;
+  width: fit-content;
+}
+
+.rulesLink:hover {
+  color: var(--text);
+}
+
+.codeInput {
+  width: 92px;
+  height: 32px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(0, 0, 0, 0.25);
+  color: var(--text);
+  font-family: var(--font-latin);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.joinRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex: none;
+}
+
+.joinBtn {
+  height: 32px;
+  padding: 0 14px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.joinBtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.joinBtn:disabled {
+  opacity: 0.45;
+}
+
+.profileBox {
+  position: absolute;
+  top: 28px;
+  right: 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.nameInput {
+  height: 34px;
+  width: 150px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text);
+  padding: 0 12px;
+  font-size: 14px;
+  text-align: right;
+}
+
+.lifetime {
+  font-family: var(--font-latin);
+  font-size: 13px;
+  color: var(--text-dim);
+}
+
+.lifetime b {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* thesis visual: card fan on a glass pane */
+.thesis {
+  position: relative;
+  height: 460px;
+  display: grid;
+  place-items: center;
+}
+
+.pane {
+  position: relative;
+  width: min(480px, 90%);
+  height: 300px;
+  border-radius: 32px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04));
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+.fan {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.fanCard {
+  margin-left: -28px;
+  box-shadow: 0 12px 40px -8px rgba(5, 6, 20, 0.55);
+  border-radius: 12px;
+}
+
+.fanCard:first-child {
+  margin-left: 0;
+}
+
+@media (max-width: 720px) {
+  .home {
+    grid-template-columns: 1fr;
+    padding: 28px 20px;
+    align-content: start;
+    gap: 24px;
+    overflow-y: auto;
+  }
+
+  .wordmark {
+    font-size: 56px;
+  }
+
+  .subtitle {
+    font-size: 16px;
+    margin-bottom: 28px;
+  }
+
+  .thesis {
+    height: 240px;
+  }
+
+  .pane {
+    height: 200px;
+  }
+
+  .profileBox {
+    top: 20px;
+    right: 20px;
+  }
+}

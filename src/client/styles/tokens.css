@@ -1,0 +1,127 @@
+:root {
+  /* palette */
+  --night: #121430;
+  --dusk: #2b2650;
+  --pink-city: #e7a8a0;
+  --jal: #79d3c9;
+  --porcelain: #f7f5f1;
+  --ink: #17182c;
+  --text: #eef0fa;
+  --text-dim: rgba(238, 240, 250, 0.62);
+  --diamond: #c73e5a;
+  --gold: #c99a2e;
+  --silver: #8c97a8;
+  --cloth: #7b5bc4;
+  --spice: #2e8f6e;
+  --leather: #8e5b3c;
+  --camel: #c8a877;
+  --camel-ink: #9c7a45;
+  --camel-face: #f3ebdd;
+  --jali-gold: #d9c27a;
+
+  /* type */
+  --font-latin: 'Bricolage Grotesque Variable', 'Bricolage Grotesque', 'PingFang SC',
+    system-ui, sans-serif;
+  --font-serif: 'Songti SC', 'STSong', 'Noto Serif CJK SC', 'Source Han Serif SC', serif;
+  --font-body: 'PingFang SC', 'HarmonyOS Sans SC', 'MiSans', 'Microsoft YaHei',
+    'Noto Sans CJK SC', system-ui, sans-serif;
+
+  /* card sizing (overridden per viewport) */
+  --card-w: 104px;
+  --card-h: 146px;
+  --mini-w: 56px;
+  --mini-h: 78px;
+  --chip-sz: 34px;
+
+  /* jali lattice tile — 8-point star of two overlapping squares joined to neighbours */
+  --jali-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cg fill='none' stroke='white' stroke-width='1'%3E%3Crect x='14' y='14' width='20' height='20'/%3E%3Crect x='14' y='14' width='20' height='20' transform='rotate(45 24 24)'/%3E%3Cpath d='M24 0V10M24 38V48M0 24H10M38 24H48M0 0L17 17M48 0L31 17M0 48L17 31M48 48L31 31'/%3E%3C/g%3E%3C/svg%3E");
+  --jali-tile-gold: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cg fill='none' stroke='%23D9C27A' stroke-width='1'%3E%3Crect x='14' y='14' width='20' height='20'/%3E%3Crect x='14' y='14' width='20' height='20' transform='rotate(45 24 24)'/%3E%3Cpath d='M24 0V10M24 38V48M0 24H10M38 24H48M0 0L17 17M48 0L31 17M0 48L17 31M48 48L31 31'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--night);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+button {
+  font-family: inherit;
+  color: inherit;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+:focus-visible {
+  outline: 2px solid var(--jal);
+  outline-offset: 3px;
+}
+
+input {
+  font-family: inherit;
+}
+
+/* numerals always tabular latin */
+.num,
+button,
+input {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-height: 859px) {
+  :root {
+    --card-w: 84px;
+    --card-h: 118px;
+    --mini-w: 52px;
+    --mini-h: 73px;
+    --chip-sz: 30px;
+  }
+}
+
+@media (max-height: 719px) {
+  :root {
+    --card-w: 76px;
+    --card-h: 106px;
+    --mini-w: 46px;
+    --mini-h: 65px;
+  }
+}
+
+@media (max-width: 720px) {
+  :root {
+    --card-w: 58px;
+    --card-h: 82px;
+    --mini-w: 40px;
+    --mini-h: 56px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
