@@ -1,0 +1,423 @@
+.page {
+  position: relative;
+  z-index: 1;
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 0 24px 28px;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 0;
+}
+
+.wordmark {
+  font-family: var(--font-latin);
+  font-weight: 700;
+  font-size: 20px;
+  letter-spacing: 0.02em;
+}
+
+.wordmark em {
+  font-style: normal;
+  color: var(--text-dim);
+  font-weight: 400;
+  margin-left: 8px;
+  font-size: 14px;
+}
+
+.main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  gap: 44px;
+  align-items: center;
+  justify-content: center;
+}
+
+.leftCol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+/* left: mini glass arena */
+.arena {
+  position: relative;
+  width: 640px;
+  height: 420px;
+  border-radius: 28px;
+  padding: 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 24px 70px rgba(0, 0, 0, 0.35);
+}
+
+.arena::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  padding: 10px;
+  backdrop-filter: blur(9px) saturate(140%);
+  -webkit-backdrop-filter: blur(9px) saturate(140%);
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.arena::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  padding: 10px;
+  background-image: var(--jali-tile-gold);
+  background-size: 48px;
+  opacity: 0.14;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.etch {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-latin);
+  font-size: 64px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: rgba(255, 255, 255, 0.05);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* seat card — 300×72 glass pill */
+.seat {
+  width: 300px;
+  height: 72px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 18px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  position: relative;
+  z-index: 1;
+}
+
+.seatEmpty {
+  background: none;
+  border: 1.5px dashed rgba(255, 255, 255, 0.25);
+  justify-content: center;
+  color: var(--text-dim);
+  font-size: 14px;
+  letter-spacing: 0.2em;
+  gap: 14px;
+}
+
+.avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--porcelain);
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-serif);
+  font-size: 20px;
+  flex: none;
+}
+
+.seatMain {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.seatName {
+  font-family: var(--font-serif);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.seatTags {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.tag {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 1px 7px;
+  white-space: nowrap;
+}
+
+.tagYou {
+  color: var(--jal);
+  border-color: rgba(121, 211, 201, 0.4);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.dotOn {
+  background: var(--jal);
+  box-shadow: 0 0 6px var(--jal);
+}
+
+.dotOff {
+  background: var(--text-dim);
+  opacity: 0.5;
+}
+
+.offline {
+  font-size: 11px;
+  color: var(--text-dim);
+  white-space: nowrap;
+}
+
+/* right column — bounded by the viewport; the rules panel scrolls internally */
+.side {
+  width: 360px;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.codeCard {
+  padding: 20px 24px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.codeLabel {
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 0.14em;
+  margin-bottom: 6px;
+}
+
+.code {
+  font-family: var(--font-latin);
+  font-size: 40px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--text);
+  line-height: 1.1;
+}
+
+.panel {
+  padding: 18px 20px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.panelTitle {
+  font-size: 12px;
+  color: var(--text-dim);
+  letter-spacing: 0.14em;
+  margin-bottom: 12px;
+}
+
+.rulesPanel {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.ruleRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 7px 0;
+}
+
+.ruleLabel {
+  width: 132px;
+  flex: none;
+  padding-top: 6px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.ruleRow > :last-child {
+  flex: 1;
+  min-width: 0;
+  justify-content: flex-start;
+}
+
+.ruleDesc {
+  display: block;
+  font-size: 11px;
+  color: var(--text-dim);
+}
+
+.ruleVal {
+  flex: none;
+  font-size: 12px;
+  font-family: var(--font-latin);
+  font-weight: 600;
+  color: var(--jal);
+  white-space: nowrap;
+}
+
+.specList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.specName {
+  font-size: 12px;
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+.specEmpty {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+/* actions under the arena */
+.arenaFoot {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+  z-index: 1;
+  margin-top: 18px;
+}
+
+.hint {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.connState {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+.rulesToggleM {
+  display: none;
+}
+
+.rulesBlock {
+  display: contents;
+}
+
+.lastMatch {
+  font-size: 12px;
+  color: var(--text-dim);
+}
+
+@media (max-width: 1080px) {
+  .page {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+
+  .main {
+    flex-direction: column;
+    gap: 14px;
+    align-items: stretch;
+  }
+
+  .leftCol,
+  .side {
+    display: contents;
+  }
+
+  .arena {
+    width: 100%;
+    height: auto;
+    min-height: 240px;
+    gap: 22px;
+    order: 2;
+  }
+
+  /* mobile order: code → table/seats → actions → rules(collapsible) → spectators */
+  .codeCard {
+    order: 1;
+  }
+
+  .arenaFoot {
+    order: 3;
+    flex-wrap: wrap;
+  }
+
+  .rulesToggleM {
+    display: flex;
+    order: 4;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: var(--text);
+    font-size: 14px;
+  }
+
+  .panel.rulesPanel {
+    display: none;
+    order: 5;
+  }
+
+  .panel.rulesPanel.open {
+    display: block;
+  }
+
+  .panel.specPanel {
+    order: 6;
+  }
+}
