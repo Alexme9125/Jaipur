@@ -23,7 +23,7 @@
   align-items: center;
   justify-content: space-between;
   padding-bottom: 10px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  border-bottom: 1px solid var(--line-2);
   margin-bottom: 10px;
 }
 
@@ -64,8 +64,8 @@
   font-family: var(--font-latin);
   font-weight: 600;
   font-size: 11px;
-  background: var(--porcelain);
-  color: var(--ink);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
   border-radius: 7px;
   padding: 3px 7px;
 }
@@ -76,7 +76,7 @@
   align-items: baseline;
   margin-top: 8px;
   padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  border-top: 1px solid var(--line-2);
 }
 
 .totalLabel {
@@ -96,7 +96,7 @@
 .cumulative {
   margin-top: 20px;
   padding-top: 14px;
-  border-top: 1px dashed rgba(255, 255, 255, 0.14);
+  border-top: 1px dashed var(--line-2);
   font-size: 13px;
   color: var(--text-dim);
   display: flex;

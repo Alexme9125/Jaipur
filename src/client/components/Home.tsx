@@ -7,6 +7,7 @@ import { CardView } from './CardView';
 import { Sheet } from './Sheet';
 import { RulesContent } from './Table';
 import { loadProfile, saveProfile, type Profile } from '../game/profile';
+import { ThemeToggle } from './ThemeToggle';
 import css from './Home.module.css';
 
 const FAN: CardType[] = ['diamond', 'gold', 'silver', 'cloth', 'camel'];
@@ -41,6 +42,7 @@ export function Home(props: {
 
   return (
     <div className={css.home}>
+      <ThemeToggle floating className={css.homeToggle} />
       <div className={css.profileBox}>
         <input
           className={css.nameInput}

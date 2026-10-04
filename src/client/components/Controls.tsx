@@ -50,9 +50,9 @@ export function TextButton(props: { children: ReactNode; onClick?: () => void })
 }
 
 const DOT_COLOR: Record<Personality, string> = {
-  cautious: 'var(--jal)',
-  balanced: 'var(--porcelain)',
-  aggressive: 'var(--pink-city)',
+  cautious: 'var(--persona-cautious)',
+  balanced: 'var(--persona-balanced)',
+  aggressive: 'var(--persona-aggressive)',
 };
 
 export function PersonalityChip({ p }: { p: Personality }) {

@@ -4,6 +4,7 @@ import type { SeatPublic } from '@shared/protocol';
 import type { RemoteDriver, RemoteMeta } from '../game/remote';
 import { PrimaryButton, SecondaryButton, Seg } from './Controls';
 import { RulesContent } from './Table';
+import { ThemeToggle } from './ThemeToggle';
 import css from './Room.module.css';
 
 function Countdown({ deadline }: { deadline: number }) {
@@ -83,7 +84,10 @@ export function Room({
           <span className={css.wordmark}>
             Jaipur<em>· 房间</em>
           </span>
-          <SecondaryButton onClick={onLeave}>离开房间</SecondaryButton>
+          <div className={css.topActions}>
+            <ThemeToggle />
+            <SecondaryButton onClick={onLeave}>离开房间</SecondaryButton>
+          </div>
         </div>
         <p className={css.connState}>
           {meta.connected ? '进入房间…' : '连接中…'}
@@ -139,7 +143,10 @@ export function Room({
         <span className={css.wordmark}>
           Jaipur<em>· 房间</em>
         </span>
-        <SecondaryButton onClick={onLeave}>离开房间</SecondaryButton>
+        <div className={css.topActions}>
+          <ThemeToggle />
+          <SecondaryButton onClick={onLeave}>离开房间</SecondaryButton>
+        </div>
       </div>
       <div className={css.main}>
         <div className={css.leftCol}>
