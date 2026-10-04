@@ -29,6 +29,7 @@ import {
 } from './Controls';
 import { Sheet } from './Sheet';
 import { RoundEndSheet } from './Sheets';
+import { ThemeToggle } from './ThemeToggle';
 import css from './Table.module.css';
 
 let fakeSeq = 0;
@@ -70,6 +71,7 @@ export function Table(props: TableProps) {
   const [showLog, setShowLog] = useState(false);
   const [showRules, setShowRules] = useState(false);
   const [exitAsk, setExitAsk] = useState(false);
+  const [showDiscard, setShowDiscard] = useState(false);
 
   const seat = view.viewer ?? 0;
   const opp = (seat + 1) % PLAYER_COUNT;
@@ -171,6 +173,29 @@ export function Table(props: TableProps) {
   };
 
   const askExit = () => (props.confirmExit ? setExitAsk(true) : props.onExit());
+
+  /* discard pile: click-to-browse when the rule allows it (S3: public info) */
+  const canBrowseDiscard = view.rules.discardBrowsable && view.discardCount > 0;
+  const discardTitle = view.rules.discardBrowsable
+    ? undefined
+    : '本局规则：弃牌堆不可翻看';
+  /* plain render helper (not a component) so children keep their identity
+     across renders — a component defined here would remount every render */
+  const discardPile = (boxClass: string | undefined, children: ReactNode) =>
+    canBrowseDiscard ? (
+      <button
+        type="button"
+        className={`${boxClass ?? ''} ${css.discardBtn}`}
+        onClick={() => setShowDiscard(true)}
+        aria-label="翻看弃牌堆"
+      >
+        {children}
+      </button>
+    ) : (
+      <div className={boxClass} title={discardTitle}>
+        {children}
+      </div>
+    );
 
   /* ── rails ── */
   const goodsRows = GOODS.map((g) => ({ good: g, pile: view.goodsPiles[g] }));
@@ -274,6 +299,7 @@ export function Table(props: TableProps) {
               退出
             </SecondaryButton>
           </div>
+          <ThemeToggle />
           <button
             type="button"
             className={css.menuBtn}
@@ -331,13 +357,14 @@ export function Table(props: TableProps) {
                     <span className={css.headCount}>{view.deckCount}</span>
                   </div>
                   <div className={css.headPile}>
-                    <div className={css.headPileBox}>
-                      {view.discardTop ? (
+                    {discardPile(
+                      css.headPileBox,
+                      view.discardTop ? (
                         <CardView card={view.discardTop} mini selectable={false} />
                       ) : (
                         <div className={css.emptyWell} />
-                      )}
-                    </div>
+                      ),
+                    )}
                     <span className={css.headCount}>{view.discardCount}</span>
                   </div>
                 </div>
@@ -388,8 +415,9 @@ export function Table(props: TableProps) {
                   <span className={css.pileLabel}>牌堆 {view.deckCount}</span>
                 </div>
                 <div className={css.pile}>
-                  <div className={css.pileBox}>
-                    {view.discard.length === 0 ? (
+                  {discardPile(
+                    css.pileBox,
+                    view.discard.length === 0 ? (
                       <div className={css.emptyWell} />
                     ) : (
                       view.discard.slice(-3).map((c, i) => (
@@ -402,10 +430,13 @@ export function Table(props: TableProps) {
                           selectable={false}
                           mini
                           z={i}
+                          /* inline style beats TravelCard's own `position:'relative'`,
+                             restoring the tidy 3px-offset stack */
+                          style={{ position: 'absolute', left: i * 3, top: i * 3 }}
                         />
                       ))
-                    )}
-                  </div>
+                    ),
+                  )}
                   <span className={css.pileLabel}>弃牌 {view.discardCount}</span>
                 </div>
               </div>
@@ -608,6 +639,29 @@ export function Table(props: TableProps) {
             <RulesContent rules={view.rules} />
           </Sheet>
         )}
+        {showDiscard && playing && (
+          <Sheet
+            title={`弃牌堆 · ${view.discardCount} 张`}
+            onClose={() => setShowDiscard(false)}
+          >
+            <div className={css.discardList}>
+              {([...GOODS, 'camel'] as const).map((t) => {
+                const n = view.discard.filter((c) => c.type === t).length;
+                if (n === 0) return null;
+                return (
+                  <div key={t} className={css.discardRow}>
+                    <CardView card={fakeCard(t)} mini selectable={false} />
+                    <span className={css.discardName}>{typeName(t)}</span>
+                    <span className={css.discardN}>×{n}</span>
+                  </div>
+                );
+              })}
+            </div>
+            {view.discardTop && (
+              <p className={css.sheetText}>最近弃置：{typeName(view.discardTop.type)}</p>
+            )}
+          </Sheet>
+        )}
         {view.phase !== 'playing' && !props.ended && (
           <RoundEndSheet
             view={view}
@@ -757,7 +811,6 @@ function HerdStack({
     herdIds ?? Array.from({ length: herdCount ?? 0 }, (_, i) => `__herd-${idPrefix}-${i}`);
   if (ids.length === 0) return <div className={css.emptyWell} />;
   const visible = ids.slice(-6);
-  const top = visible.length - 1;
   return (
     <div className={css.herdStack}>
       {visible.map((id, i) => (
@@ -765,7 +818,9 @@ function HerdStack({
           key={id}
           card={fakeCard('camel')}
           id={id}
-          faceDown={i < top}
+          /* herd camels are public — every layer stays face-up so no
+             card-back band peeks above the stack */
+          faceDown={false}
           isNew={isNew(id)}
           selectable={false}
           mini

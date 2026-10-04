@@ -3,13 +3,14 @@ import { PERSONALITY_META, type Personality } from '@shared/ai';
 import { DEFAULT_RULES, RULE_META, type RuleOptions, type RuleValue } from '@shared/engine';
 import { botNameFor } from '../game/local';
 import { PrimaryButton, Seg, TextButton } from './Controls';
+import { ThemeToggle } from './ThemeToggle';
 import css from './Setup.module.css';
 
 const PERSONAS: Personality[] = ['cautious', 'balanced', 'aggressive'];
 const DOT: Record<Personality, string> = {
-  cautious: 'var(--jal)',
-  balanced: 'var(--porcelain)',
-  aggressive: 'var(--pink-city)',
+  cautious: 'var(--persona-cautious)',
+  balanced: 'var(--persona-balanced)',
+  aggressive: 'var(--persona-aggressive)',
 };
 
 export function Setup(props: {
@@ -25,6 +26,7 @@ export function Setup(props: {
 
   return (
     <div className={css.wrap}>
+      <ThemeToggle floating />
       <div className={css.sheet}>
         <h2 className={css.title}>人机练习</h2>
         <p className={css.sub}>选择对手人格。斋普尔规则，先得 2 印赢下整场。</p>

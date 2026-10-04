@@ -1,10 +1,19 @@
 <!doctype html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#121430" />
+    <meta name="theme-color" content="#EDF2F3" />
     <title>斋普尔 · Jaipur</title>
+    <script>
+      /* restore the saved theme before first paint to avoid a flash */
+      try {
+        document.documentElement.dataset.theme =
+          localStorage.getItem('jaipur.theme') === 'dark' ? 'dark' : 'light';
+      } catch (e) {
+        /* storage unavailable — default light */
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

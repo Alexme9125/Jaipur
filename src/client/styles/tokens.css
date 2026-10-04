@@ -36,6 +36,141 @@
   /* jali lattice tile — 8-point star of two overlapping squares joined to neighbours */
   --jali-tile: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cg fill='none' stroke='white' stroke-width='1'%3E%3Crect x='14' y='14' width='20' height='20'/%3E%3Crect x='14' y='14' width='20' height='20' transform='rotate(45 24 24)'/%3E%3Cpath d='M24 0V10M24 38V48M0 24H10M38 24H48M0 0L17 17M48 0L31 17M0 48L17 31M48 48L31 31'/%3E%3C/g%3E%3C/svg%3E");
   --jali-tile-gold: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cg fill='none' stroke='%23D9C27A' stroke-width='1'%3E%3Crect x='14' y='14' width='20' height='20'/%3E%3Crect x='14' y='14' width='20' height='20' transform='rotate(45 24 24)'/%3E%3Cpath d='M24 0V10M24 38V48M0 24H10M38 24H48M0 0L17 17M48 0L31 17M0 48L17 31M48 48L31 31'/%3E%3C/g%3E%3C/svg%3E");
+  --jali-tile-blue: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48'%3E%3Cg fill='none' stroke='%232F5597' stroke-width='1'%3E%3Crect x='14' y='14' width='20' height='20'/%3E%3Crect x='14' y='14' width='20' height='20' transform='rotate(45 24 24)'/%3E%3Cpath d='M24 0V10M24 38V48M0 24H10M38 24H48M0 0L17 17M48 0L31 17M0 48L17 31M48 48L31 31'/%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* ── semantic theme tokens ──
+   light is the default theme; dark values live under [data-theme='dark'].
+   Component CSS must consume these, never raw rgba/hex. */
+
+:root,
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --bg-0: #f5f7f6;
+  --bg-1: #edf2f3;
+  --bg-2: #e3eaee;
+
+  --pool-a: #a9c1e8;
+  --pool-a-op: 0.38;
+  --pool-b: #a7d8c6;
+  --pool-b-op: 0.34;
+  --grain-op: 0.025;
+
+  --text: #1a2536;
+  --text-dim: rgba(26, 37, 54, 0.62);
+
+  --jal: #2e7d6b;
+  --accent-blue: #2f5597;
+
+  --surface-1: rgba(255, 255, 255, 0.55);
+  --surface-2: rgba(255, 255, 255, 0.78);
+  --surface-3: rgba(255, 255, 255, 0.95);
+
+  --line-1: rgba(26, 37, 54, 0.08);
+  --line-2: rgba(26, 37, 54, 0.13);
+  --line-3: rgba(26, 37, 54, 0.22);
+
+  --sunken: rgba(26, 37, 54, 0.06);
+  --well-inset: inset 0 2px 6px rgba(40, 60, 90, 0.1);
+
+  --glass-hi: rgba(255, 255, 255, 0.82);
+  --glass-lo: rgba(255, 255, 255, 0.62);
+  --glass-rim: rgba(255, 255, 255, 0.9);
+  --glass-sheen: rgba(255, 255, 255, 1);
+
+  --shadow-md: 0 24px 60px -18px rgba(38, 58, 92, 0.22);
+  --shadow-lg: 0 30px 80px -24px rgba(38, 58, 92, 0.3);
+  --shadow-card: 0 1px 2px rgba(38, 58, 92, 0.1), 0 8px 18px -8px rgba(38, 58, 92, 0.22);
+  --card-edge: rgba(26, 37, 54, 0.1);
+
+  --veil: rgba(32, 48, 74, 0.22);
+  --table-fill: rgba(255, 255, 255, 0.5);
+  --table-line: rgba(47, 85, 151, 0.16);
+  --rim-tile: var(--jali-tile-blue);
+  --rim-op: 0.12;
+
+  --btn-bg: #24467e;
+  --btn-fg: #f6f8fb;
+  --btn-disabled-bg: rgba(26, 37, 54, 0.08);
+
+  --card-back: #24467e;
+  --card-back-line: rgba(255, 255, 255, 0.18);
+  --card-back-jali-op: 0.32;
+  --card-back-frame: rgba(217, 194, 122, 0.55);
+
+  --persona-cautious: #2e7d6b;
+  --persona-balanced: #2f5597;
+  --persona-aggressive: #c2604f;
+
+  --stack-under: color-mix(in srgb, var(--porcelain) 80%, #9aa8bc);
+  --seal-ghost: rgba(26, 37, 54, 0.25);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --night: #11162e;
+  --dusk: #232a52;
+
+  --bg-0: var(--dusk);
+  --bg-1: var(--night);
+  --bg-2: #0b0f24;
+
+  --pool-a: var(--pink-city);
+  --pool-a-op: 0.26;
+  --pool-b: #79d3c9;
+  --pool-b-op: 0.22;
+  --grain-op: 0.03;
+
+  --text: #eef0fa;
+  --text-dim: rgba(238, 240, 250, 0.68);
+
+  --jal: #79d3c9;
+  --accent-blue: #8fb2ee;
+
+  --surface-1: rgba(255, 255, 255, 0.06);
+  --surface-2: rgba(255, 255, 255, 0.11);
+  --surface-3: rgba(255, 255, 255, 0.18);
+
+  --line-1: rgba(255, 255, 255, 0.09);
+  --line-2: rgba(255, 255, 255, 0.16);
+  --line-3: rgba(255, 255, 255, 0.26);
+
+  --sunken: rgba(0, 0, 0, 0.25);
+  --well-inset: inset 0 2px 8px rgba(0, 0, 0, 0.25);
+
+  --glass-hi: rgba(255, 255, 255, 0.14);
+  --glass-lo: rgba(255, 255, 255, 0.06);
+  --glass-rim: rgba(255, 255, 255, 0.22);
+  --glass-sheen: rgba(255, 255, 255, 0.5);
+
+  --shadow-md: 0 24px 70px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 30px 80px -20px rgba(5, 6, 20, 0.7);
+  --shadow-card: 0 6px 16px -6px rgba(0, 0, 0, 0.45);
+  --card-edge: transparent;
+
+  --veil: rgba(5, 6, 20, 0.55);
+  --table-fill: rgba(255, 255, 255, 0.025);
+  --table-line: rgba(255, 255, 255, 0.09);
+  --rim-tile: var(--jali-tile-gold);
+  --rim-op: 0.14;
+
+  --btn-bg: var(--porcelain);
+  --btn-fg: var(--ink);
+  --btn-disabled-bg: rgba(255, 255, 255, 0.18);
+
+  --card-back: var(--night);
+  --card-back-line: rgba(255, 255, 255, 0.12);
+  --card-back-jali-op: 0.5;
+  --card-back-frame: rgba(212, 160, 74, 0.35);
+
+  --persona-cautious: var(--jal);
+  --persona-balanced: var(--porcelain);
+  --persona-aggressive: var(--pink-city);
+
+  --stack-under: color-mix(in srgb, var(--porcelain) 78%, #3a3040);
+  --seal-ghost: rgba(238, 240, 250, 0.38);
 }
 
 * {
@@ -50,7 +185,7 @@ body,
 
 body {
   margin: 0;
-  background: var(--night);
+  background: var(--bg-1);
   color: var(--text);
   font-family: var(--font-body);
   font-size: 15px;
@@ -114,6 +249,18 @@ input {
     --mini-w: 40px;
     --mini-h: 56px;
   }
+}
+
+/* brief cross-fade when the theme flips (reduced-motion still neutralises it) */
+html.theme-switching,
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after {
+  transition:
+    background-color 0.35s ease,
+    color 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
