@@ -1,21 +1,27 @@
 .autoNext {
   margin: 14px 0 0;
-  font-size: 11px;
+  font-size: 12px;
   color: var(--text-dim);
   text-align: right;
-  letter-spacing: 0.04em;
 }
 
 .reason {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-dim);
-  margin: -10px 0 18px;
+  margin: -10px 0 22px;
 }
 
 .cols {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 18px;
+  gap: 20px;
+}
+
+.cols > div {
+  background: var(--surface-1);
+  border: 1px solid var(--line-1);
+  border-radius: 16px;
+  padding: 16px 18px;
 }
 
 .colHead {
@@ -23,18 +29,20 @@
   align-items: center;
   justify-content: space-between;
   padding-bottom: 10px;
-  border-bottom: 1px solid var(--line-2);
+  border-bottom: 1px solid var(--line-1);
   margin-bottom: 10px;
 }
 
 .colName {
+  font-family: var(--font-serif);
   font-size: 16px;
   font-weight: 600;
+  color: var(--text);
 }
 
 .colSeals {
   display: flex;
-  gap: 5px;
+  gap: 6px;
 }
 
 .row {
@@ -56,17 +64,17 @@
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
-  padding: 6px 0;
-  min-height: 30px;
+  padding: 4px 0 6px;
+  min-height: 28px;
 }
 
 .bonusVal {
   font-family: var(--font-latin);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 11px;
   background: var(--btn-bg);
   color: var(--btn-fg);
-  border-radius: 7px;
+  border-radius: 6px;
   padding: 3px 7px;
 }
 
@@ -74,29 +82,29 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-top: 8px;
+  margin-top: 10px;
   padding-top: 10px;
   border-top: 1px solid var(--line-2);
 }
 
 .totalLabel {
-  font-size: 13px;
+  font-size: 12.5px;
   color: var(--text-dim);
 }
 
 .totalVal {
   font-family: var(--font-latin);
-  font-weight: 600;
-  font-size: 40px;
-  letter-spacing: -0.02em;
+  font-weight: 700;
+  font-size: 36px;
+  letter-spacing: -0.025em;
   color: var(--text);
   font-variant-numeric: tabular-nums;
 }
 
 .cumulative {
-  margin-top: 20px;
+  margin-top: 18px;
   padding-top: 14px;
-  border-top: 1px dashed var(--line-2);
+  border-top: 1px solid var(--line-1);
   font-size: 13px;
   color: var(--text-dim);
   display: flex;
@@ -113,7 +121,7 @@
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 24px;
+  margin-top: 22px;
 }
 
 @media (max-width: 560px) {

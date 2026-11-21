@@ -5,7 +5,7 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding: 0 24px 28px;
+  padding: 0 28px 28px;
 }
 
 .topbar {
@@ -24,8 +24,8 @@
 .wordmark {
   font-family: var(--font-latin);
   font-weight: 700;
-  font-size: 20px;
-  letter-spacing: 0.02em;
+  font-size: 21px;
+  letter-spacing: -0.02em;
 }
 
 .wordmark em {
@@ -33,14 +33,14 @@
   color: var(--text-dim);
   font-weight: 400;
   margin-left: 8px;
-  font-size: 14px;
+  font-size: 13.5px;
 }
 
 .main {
   flex: 1;
   min-height: 0;
   display: flex;
-  gap: 44px;
+  gap: 40px;
   align-items: center;
   justify-content: center;
 }
@@ -49,63 +49,34 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
 }
 
-/* left: mini glass arena */
+/* left: architectural linen table arena */
 .arena {
   position: relative;
-  width: 640px;
-  height: 420px;
-  border-radius: 28px;
-  padding: 26px;
+  width: 620px;
+  height: 410px;
+  border-radius: 26px;
+  padding: 28px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
   background: var(--table-fill);
+  background-image: var(--table-weave);
   border: 1px solid var(--table-line);
   box-shadow:
-    inset 0 1px 0 var(--line-1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
     var(--shadow-md);
-}
-
-.arena::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 28px;
-  padding: 10px;
-  backdrop-filter: blur(9px) saturate(140%);
-  -webkit-backdrop-filter: blur(9px) saturate(140%);
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
-  pointer-events: none;
 }
 
 .arena::after {
   content: '';
   position: absolute;
-  inset: 0;
-  border-radius: 28px;
-  padding: 10px;
-  background-image: var(--rim-tile);
-  background-size: 48px;
-  opacity: var(--rim-op);
-  -webkit-mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  -webkit-mask-composite: xor;
-  mask:
-    linear-gradient(#000 0 0) content-box,
-    linear-gradient(#000 0 0);
-  mask-composite: exclude;
+  inset: 12px;
+  border-radius: 17px;
+  border: 1px solid var(--table-frame);
   pointer-events: none;
 }
 
@@ -117,49 +88,50 @@
   font-family: var(--font-latin);
   font-size: 64px;
   font-weight: 700;
-  letter-spacing: 0.14em;
-  color: color-mix(in srgb, var(--text) 5%, transparent);
+  letter-spacing: 0.12em;
+  color: color-mix(in srgb, var(--text) 6%, transparent);
   pointer-events: none;
   user-select: none;
 }
 
-/* seat card — 300×72 glass pill */
+/* seat card — crisp matte architectural pill */
 .seat {
-  width: 300px;
+  width: 304px;
   height: 72px;
-  border-radius: 999px;
+  border-radius: 18px;
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0 18px;
-  background: var(--surface-1);
+  padding: 0 16px;
+  background: var(--surface-card);
   border: 1px solid var(--line-2);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-sm);
   position: relative;
   z-index: 1;
 }
 
 .seatEmpty {
-  background: none;
+  background: var(--well-bg);
   border: 1.5px dashed var(--line-3);
+  box-shadow: none;
   justify-content: center;
   color: var(--text-dim);
   font-size: 14px;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.16em;
   gap: 14px;
 }
 
 .avatar {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   background: var(--btn-bg);
   color: var(--btn-fg);
   display: grid;
   place-items: center;
   font-family: var(--font-serif);
-  font-size: 20px;
+  font-weight: 700;
+  font-size: 18px;
   flex: none;
 }
 
@@ -173,7 +145,7 @@
 
 .seatName {
   font-family: var(--font-serif);
-  font-size: 16px;
+  font-size: 15.5px;
   font-weight: 600;
   color: var(--text);
   white-space: nowrap;
@@ -188,18 +160,21 @@
 }
 
 .tag {
-  font-size: 10px;
-  letter-spacing: 0.1em;
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
   color: var(--text-dim);
   border: 1px solid var(--line-2);
-  border-radius: 999px;
+  background: var(--surface-1);
+  border-radius: 6px;
   padding: 1px 7px;
   white-space: nowrap;
 }
 
 .tagYou {
   color: var(--jal);
-  border-color: color-mix(in srgb, var(--jal) 40%, transparent);
+  background: var(--jal-soft);
+  border-color: color-mix(in srgb, var(--jal) 35%, transparent);
 }
 
 .dot {
@@ -211,12 +186,10 @@
 
 .dotOn {
   background: var(--jal);
-  box-shadow: 0 0 6px var(--jal);
 }
 
 .dotOff {
-  background: var(--text-dim);
-  opacity: 0.5;
+  background: var(--text-faint);
 }
 
 .offline {
@@ -225,26 +198,28 @@
   white-space: nowrap;
 }
 
-/* right column — bounded by the viewport; the rules panel scrolls internally */
+/* right column */
 .side {
-  width: 360px;
+  width: 372px;
   max-height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
 }
 
 .codeCard {
-  padding: 20px 24px;
-  border-radius: 20px;
-  background: var(--surface-1);
-  border: 1px solid var(--line-1);
+  padding: 20px 22px;
+  border-radius: 18px;
+  background: var(--surface-card);
+  border: 1px solid var(--line-2);
+  box-shadow: var(--shadow-sm);
 }
 
 .codeLabel {
   font-size: 12px;
+  font-weight: 600;
   color: var(--text-dim);
-  letter-spacing: 0.14em;
+  letter-spacing: 0.1em;
   margin-bottom: 6px;
 }
 
@@ -258,17 +233,19 @@
 }
 
 .panel {
-  padding: 18px 20px;
-  border-radius: 20px;
-  background: var(--surface-1);
-  border: 1px solid var(--line-1);
+  padding: 16px 20px;
+  border-radius: 18px;
+  background: var(--surface-card);
+  border: 1px solid var(--line-2);
+  box-shadow: var(--shadow-sm);
 }
 
 .panelTitle {
   font-size: 12px;
+  font-weight: 600;
   color: var(--text-dim);
-  letter-spacing: 0.14em;
-  margin-bottom: 12px;
+  letter-spacing: 0.1em;
+  margin-bottom: 10px;
 }
 
 .rulesPanel {
@@ -281,14 +258,20 @@
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 7px 0;
+  padding: 8px 0;
+  border-top: 1px solid var(--line-1);
+}
+
+.ruleRow:first-of-type {
+  border-top: none;
 }
 
 .ruleLabel {
   width: 132px;
   flex: none;
-  padding-top: 6px;
+  padding-top: 5px;
   font-size: 13px;
+  font-weight: 500;
   color: var(--text);
 }
 
@@ -301,7 +284,9 @@
 .ruleDesc {
   display: block;
   font-size: 11px;
+  font-weight: 400;
   color: var(--text-dim);
+  margin-top: 2px;
 }
 
 .ruleVal {
@@ -323,7 +308,8 @@
   font-size: 12px;
   color: var(--text);
   background: var(--surface-2);
-  border-radius: 999px;
+  border: 1px solid var(--line-1);
+  border-radius: 8px;
   padding: 3px 10px;
 }
 
@@ -332,23 +318,22 @@
   color: var(--text-dim);
 }
 
-/* actions under the arena */
 .arenaFoot {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   position: relative;
   z-index: 1;
-  margin-top: 18px;
+  margin-top: 8px;
 }
 
 .hint {
-  font-size: 12px;
+  font-size: 12.5px;
   color: var(--text-dim);
 }
 
 .connState {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-dim);
 }
 
@@ -391,7 +376,6 @@
     order: 2;
   }
 
-  /* mobile order: code → table/seats → actions → rules(collapsible) → spectators */
   .codeCard {
     order: 1;
   }
@@ -408,11 +392,12 @@
     justify-content: space-between;
     align-items: center;
     padding: 14px 18px;
-    border-radius: 16px;
-    background: var(--surface-1);
-    border: 1px solid var(--line-1);
+    border-radius: 14px;
+    background: var(--surface-card);
+    border: 1px solid var(--line-2);
     color: var(--text);
     font-size: 14px;
+    font-weight: 600;
   }
 
   .panel.rulesPanel {

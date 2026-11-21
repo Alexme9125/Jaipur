@@ -10,11 +10,15 @@ import {
 } from '../src/shared/engine';
 import {
   actionContextFromView,
+  buildOpponentBelief,
   chooseAction,
+  chooseActionWithMeta,
+  createBotMemory,
+  observeBotMemory,
   suggestAction,
   type Personality,
 } from '../src/shared/ai';
-import { runMatch, type SeatKind } from './helpers';
+import { mkCard, mkState, mkToken, runMatch, type SeatKind } from './helpers';
 
 const PERSONALITIES: Personality[] = ['cautious', 'balanced', 'aggressive'];
 
@@ -178,4 +182,63 @@ describe('style', () => {
     },
     600_000,
   );
+});
+
+describe('tactical intelligence & human-like pacing', () => {
+  test('BotMemory tracks publicly taken opponent cards without peeking hidden hand', () => {
+    const mem = createBotMemory();
+    const s0 = mkState((st) => {
+      st.current = 0;
+      st.market = [
+        mkCard('m0', 'diamond'),
+        mkCard('m1', 'gold'),
+        mkCard('m2', 'spice'),
+        mkCard('m3', 'cloth'),
+        mkCard('m4', 'leather'),
+      ];
+      st.players[0]!.hand = [mkCard('h0', 'leather'), mkCard('h1', 'cloth')];
+      st.players[1]!.hand = [mkCard('b0', 'diamond'), mkCard('b1', 'diamond'), mkCard('b2', 'spice')];
+    });
+    observeBotMemory(mem, viewFor(s0, 1), 1);
+    // Opponent publicly takes the diamond from market
+    const s1 = applyAction(s0, 0, { type: 'take', cardId: 'm0' });
+    const v1 = viewFor(s1, 1);
+    observeBotMemory(mem, v1, 1);
+
+    const belief = buildOpponentBelief(v1, 1, mem);
+    expect(belief.knownHand.diamond).toBe(1);
+    // Hidden initial cards remain unknown (never cheated)
+    expect(belief.knownHand.leather).toBe(0);
+    expect(belief.knownHand.cloth).toBe(0);
+    expect(belief.recentInterest.diamond).toBeGreaterThan(0);
+  });
+
+  test('bot closes out a winning round instead of letting opponent play on', () => {
+    const s = mkState((st) => {
+      st.current = 1;
+      st.goodsPiles.diamond = [];
+      st.goodsPiles.gold = [];
+      st.goodsPiles.leather = [mkToken('leather', 4)];
+      st.players[1]!.goodsTokens = [mkToken('diamond', 7, 1), mkToken('diamond', 7, 2)];
+      st.players[0]!.goodsTokens = [mkToken('spice', 3, 1)];
+      st.players[1]!.hand = [mkCard('b0', 'leather')];
+      st.market = [
+        mkCard('m0', 'silver'),
+        mkCard('m1', 'cloth'),
+        mkCard('m2', 'spice'),
+        mkCard('m3', 'camel'),
+        mkCard('m4', 'camel'),
+      ];
+    });
+    const act = chooseAction(viewFor(s, 1), 'balanced', mulberry32(42));
+    expect(act).toEqual({ type: 'sell', cardIds: ['b0'] });
+  });
+
+  test('chooseActionWithMeta returns valid pacing metadata', () => {
+    const s = createMatch({ seed: 101, starter: 1 });
+    const dec = chooseActionWithMeta(viewFor(s, 1), 'balanced', mulberry32(99));
+    expect(['snap', 'normal', 'deep']).toContain(dec.complexity);
+    expect(dec.thinkingMs).toBeGreaterThanOrEqual(450);
+    expect(dec.thinkingMs).toBeLessThanOrEqual(3000);
+  });
 });

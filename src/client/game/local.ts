@@ -10,9 +10,17 @@ import {
 import { rupeesToTokens } from '@shared/format';
 import type { RuleOptions } from '@shared/engine';
 import type { Action, GameState } from '@shared/engine/types';
-import { chooseAction, suggestAction, type Personality } from '@shared/ai';
+import {
+  chooseActionWithMeta,
+  createBotMemory,
+  observeBotMemory,
+  suggestAction,
+  type BotMemory,
+  type Personality,
+  type ThinkingComplexity,
+} from '@shared/ai';
 import { describeEvent } from './describe';
-import type { DriverSnapshot, GameDriver, LogEntry } from './driver';
+import type { DriverSnapshot, GameDriver, LastMove, LogEntry } from './driver';
 import { loadProfile, saveProfile, PVE_SAVE_KEY } from './profile';
 
 export interface LocalDriverOptions {
@@ -28,6 +36,7 @@ export interface SavedGame {
   log: LogEntry[];
   names: [string, string];
   personality: Personality;
+  botMemory?: BotMemory;
 }
 
 export function loadSavedGame(): SavedGame | null {
@@ -67,6 +76,19 @@ export function botNameFor(p: Personality): string {
   return BOT_NAMES[p];
 }
 
+function extractLastMove(state: GameState, names: [string, string]): LastMove | null {
+  for (let i = state.lastEvents.length - 1; i >= 0; i--) {
+    const e = state.lastEvents[i]!;
+    if (e.type === 'take' || e.type === 'camels' || e.type === 'exchange' || e.type === 'sell') {
+      const d = describeEvent(e, names);
+      if (d && d.seat !== null) {
+        return { seat: d.seat, text: d.text, turn: state.turn };
+      }
+    }
+  }
+  return null;
+}
+
 export class LocalDriver implements GameDriver {
   private state: GameState;
   private listeners = new Set<(s: DriverSnapshot) => void>();
@@ -76,10 +98,13 @@ export class LocalDriver implements GameDriver {
   private personality: Personality;
   private rules?: Partial<RuleOptions>;
   private botRng: () => number;
+  private botMemory: BotMemory;
   private timer: ReturnType<typeof setTimeout> | null = null;
   private lastActionAt = 0;
   private autoplay = devAutoplay();
   private thinkingFlag = false;
+  private thinkingMood: ThinkingComplexity = 'normal';
+  private lastMove: LastMove | null = null;
   private disposed = false;
 
   constructor(opts: LocalDriverOptions, resume?: SavedGame) {
@@ -94,12 +119,20 @@ export class LocalDriver implements GameDriver {
       this.names = resume.names;
       this.personality = resume.personality;
       this.rules = resume.state.rules;
+      this.botMemory = resume.botMemory ?? createBotMemory();
+      this.lastMove = extractLastMove(this.state, this.names);
     } else {
       const seed = devSeed() ?? opts.seed ?? freshSeed();
       this.state = createMatch({ seed, rules: opts.rules });
+      this.botMemory = createBotMemory();
       this.recordEvents();
     }
+    this.observeBot();
     this.kick();
+  }
+
+  private observeBot(): void {
+    observeBotMemory(this.botMemory, viewFor(this.state, 1), 1);
   }
 
   /* ---------- pub/sub ---------- */
@@ -112,11 +145,13 @@ export class LocalDriver implements GameDriver {
 
   private snapshot(): DriverSnapshot {
     return {
-      view: viewFor(this.state, this.autoplay ? 0 : 0),
+      view: viewFor(this.state, 0),
       log: this.log,
       names: this.names,
       personalities: [null, this.personality],
       thinking: this.thinkingFlag,
+      thinkingMood: this.thinkingMood,
+      lastMove: this.lastMove,
     };
   }
 
@@ -139,17 +174,13 @@ export class LocalDriver implements GameDriver {
   private apply(seat: number, a: Action): void {
     this.state = applyAction(this.state, seat, a);
     this.lastActionAt = Date.now();
+    this.observeBot();
     this.recordEvents();
+    this.lastMove = extractLastMove(this.state, this.names);
     this.persist();
     this.finishIfMatchOver();
     this.kick();
     this.emit();
-  }
-
-  private applyBot(): void {
-    if (this.state.phase !== 'playing' || this.state.current !== 1) return;
-    const action = chooseAction(viewFor(this.state, 1), this.personality, this.botRng);
-    this.apply(1, action);
   }
 
   private applyAuto(): void {
@@ -160,9 +191,10 @@ export class LocalDriver implements GameDriver {
 
   /* ---------- turn scheduling ---------- */
 
-  private setThinking(on: boolean): void {
-    if (this.thinkingFlag === on) return;
+  private setThinking(on: boolean, mood: ThinkingComplexity = 'normal'): void {
+    if (this.thinkingFlag === on && this.thinkingMood === mood) return;
     this.thinkingFlag = on;
+    this.thinkingMood = mood;
     this.emit();
   }
 
@@ -173,20 +205,33 @@ export class LocalDriver implements GameDriver {
     }
     if (this.timer !== null) return;
     if (this.state.current === 1) {
-      this.setThinking(true);
-      const extra = Date.now() - this.lastActionAt < 700 ? 600 : 0;
-      const delay = 700 + this.botRng() * 500 + extra;
+      const botView = viewFor(this.state, 1);
+      const decision = chooseActionWithMeta(
+        botView,
+        this.personality,
+        this.botRng,
+        this.botMemory,
+      );
+      this.setThinking(true, decision.complexity);
+      const elapsed = Date.now() - this.lastActionAt;
+      // Leave a brief visual breath after the player's own move animation before bot acts
+      const minAfterHuman = elapsed < 520 ? 520 - elapsed : 0;
+      const delay = this.autoplay
+        ? 300
+        : Math.max(decision.thinkingMs, minAfterHuman + 320);
+      const turnAt = this.state.turn;
       this.timer = setTimeout(() => {
         this.timer = null;
         this.setThinking(false);
-        this.applyBot();
+        if (this.disposed || this.state.phase !== 'playing' || this.state.turn !== turnAt) return;
+        this.apply(1, decision.action);
       }, delay);
     } else if (this.autoplay) {
-      this.setThinking(true);
+      this.setThinking(true, 'snap');
       this.timer = setTimeout(() => {
         this.timer = null;
         this.applyAuto();
-      }, 350);
+      }, 300);
     } else {
       this.setThinking(false);
     }
@@ -197,6 +242,8 @@ export class LocalDriver implements GameDriver {
   nextRound(): void {
     if (this.state.phase !== 'roundOver' || this.state.matchWinners) return;
     this.state = engineNextRound(this.state);
+    this.lastMove = null;
+    this.observeBot();
     this.recordEvents();
     this.persist();
     this.kick();
@@ -207,8 +254,11 @@ export class LocalDriver implements GameDriver {
     this.clearTimer();
     const seed = devSeed() ?? freshSeed();
     this.state = createMatch({ seed, rules: this.rules });
+    this.botMemory = createBotMemory();
     this.log = [];
     this.logId = 0;
+    this.lastMove = null;
+    this.observeBot();
     this.recordEvents();
     this.persist();
     this.kick();
@@ -254,6 +304,7 @@ export class LocalDriver implements GameDriver {
         log: this.log,
         names: this.names,
         personality: this.personality,
+        botMemory: this.botMemory,
       };
       localStorage.setItem(PVE_SAVE_KEY, JSON.stringify(save));
     } catch {
