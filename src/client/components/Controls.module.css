@@ -1,46 +1,62 @@
 .primary {
   height: 44px;
-  padding: 0 22px;
-  border-radius: 999px;
+  padding: 0 24px;
+  border-radius: 12px;
   background: var(--btn-bg);
   color: var(--btn-fg);
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 600;
+  letter-spacing: 0.02em;
   white-space: nowrap;
-  transition: transform 0.15s ease, filter 0.15s ease;
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.16s ease, transform 0.14s ease, box-shadow 0.16s ease;
 }
 
 .primary:hover:not(:disabled) {
+  background: var(--btn-bg-hover);
   transform: translateY(-1px);
-  filter: brightness(1.05);
+  box-shadow: var(--shadow-md);
+}
+
+.primary:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .primary:disabled {
   background: var(--btn-disabled-bg);
   color: var(--text-dim);
+  box-shadow: none;
 }
 
 .secondary {
   height: 36px;
-  padding: 0 16px;
-  border-radius: 999px;
-  background: var(--surface-2);
+  padding: 0 15px;
+  border-radius: 10px;
+  background: var(--surface-card);
   border: 1px solid var(--line-2);
   color: var(--text);
   font-size: 13px;
+  font-weight: 500;
   white-space: nowrap;
-  transition: background 0.15s ease;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.03);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .secondary:hover:not(:disabled) {
   background: var(--surface-3);
+  border-color: var(--line-3);
+}
+
+.secondary:disabled {
+  opacity: 0.45;
 }
 
 .textBtn {
   color: var(--text-dim);
   font-size: 13px;
   text-decoration: underline;
-  text-underline-offset: 3px;
+  text-underline-offset: 4px;
+  text-decoration-color: var(--line-3);
 }
 
 .textBtn:hover {
@@ -50,14 +66,15 @@
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  height: 26px;
-  padding: 0 12px;
+  gap: 6px;
+  height: 24px;
+  padding: 0 10px;
   border-radius: 999px;
   background: var(--surface-2);
-  border: 1px solid var(--line-2);
-  font-size: 12px;
-  color: var(--text);
+  border: 1px solid var(--line-1);
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--text-dim);
 }
 
 .chipDot {
@@ -71,19 +88,22 @@
   align-items: center;
   gap: 4px;
   background: var(--sunken);
+  border: 1px solid var(--line-1);
   border-radius: 999px;
   padding: 3px;
 }
 
 .stepper button {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
-  background: var(--surface-2);
+  background: var(--surface-card);
+  border: 1px solid var(--line-1);
   color: var(--text);
   font-size: 14px;
   display: grid;
   place-items: center;
+  transition: background-color 0.12s ease;
 }
 
 .stepper button:hover:not(:disabled) {
@@ -98,53 +118,63 @@
   min-width: 22px;
   text-align: center;
   font-family: var(--font-latin);
-  font-weight: 600;
+  font-weight: 700;
   font-size: 13px;
 }
 
 .seg {
-  display: flex;
-  gap: 4px;
+  display: inline-flex;
+  gap: 3px;
   background: var(--sunken);
+  border: 1px solid var(--line-1);
   border-radius: 10px;
   padding: 3px;
   flex-wrap: wrap;
 }
 
 .seg button {
-  padding: 5px 10px;
-  border-radius: 8px;
+  padding: 5px 11px;
+  border-radius: 7px;
   font-size: 12px;
+  font-weight: 500;
   color: var(--text-dim);
   white-space: nowrap;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.seg button:hover:not([aria-pressed='true']) {
+  color: var(--text);
 }
 
 .seg button[aria-pressed='true'] {
-  background: var(--surface-3);
+  background: var(--surface-card);
   color: var(--text);
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
 }
 
-/* theme toggle — 36px circle, icon swaps moon/sun */
+/* theme toggle — crisp matte circular button */
 .themeToggle {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
+  border-radius: 10px;
   display: grid;
   place-items: center;
-  background: var(--surface-2);
+  background: var(--surface-card);
   border: 1px solid var(--line-2);
   color: var(--text);
-  transition: background 0.15s ease;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .themeToggle:hover {
   background: var(--surface-3);
+  border-color: var(--line-3);
 }
 
 .themeToggleFloating {
   position: fixed;
-  top: calc(16px + env(safe-area-inset-top));
-  right: 16px;
+  top: calc(18px + env(safe-area-inset-top));
+  right: 20px;
   z-index: 20;
 }
 

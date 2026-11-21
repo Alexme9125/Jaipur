@@ -23,7 +23,7 @@ export function applyTheme(t: Theme): void {
   document.documentElement.dataset.theme = t;
   document
     .querySelector('meta[name="theme-color"]')
-    ?.setAttribute('content', t === 'dark' ? '#11162E' : '#EDF2F3');
+    ?.setAttribute('content', t === 'dark' ? '#11151C' : '#ECE9E2');
   try {
     localStorage.setItem(KEY, t);
   } catch {

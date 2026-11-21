@@ -5,7 +5,8 @@ import { checkAction } from '@shared/engine/actions';
 import { actionContextFromView } from '@shared/ai';
 import { rupeesToTokens } from '@shared/format';
 import type { ClientMsg, ServerMsg, RoomPublic, LogLine } from '@shared/protocol';
-import type { DriverSnapshot, GameDriver, LogEntry } from './driver';
+import type { DriverSnapshot, GameDriver, LastMove, LogEntry } from './driver';
+import { describeEvent } from './describe';
 import { loadProfile, saveProfile } from './profile';
 import { createClientId } from './identity';
 
@@ -155,12 +156,24 @@ export class RemoteDriver implements GameDriver {
     const view = this.view!;
     const seat = view.viewer;
     const playing = view.phase === 'playing';
+    let lastMove: LastMove | null = null;
+    for (let i = view.lastEvents.length - 1; i >= 0; i--) {
+      const e = view.lastEvents[i]!;
+      if (e.type === 'take' || e.type === 'camels' || e.type === 'exchange' || e.type === 'sell') {
+        const d = describeEvent(e, this.names);
+        if (d && d.seat !== null) {
+          lastMove = { seat: d.seat, text: d.text, turn: view.turn };
+          break;
+        }
+      }
+    }
     const snap: DriverSnapshot = {
       view,
       log: this.log,
       names: this.names,
       personalities: [null, null],
       thinking: playing && seat !== null && view.current !== seat,
+      lastMove,
       seat,
       oppReconnectDeadline: null,
       ready: this.room?.ready,

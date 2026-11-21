@@ -1,4 +1,4 @@
-import type { Personality } from '@shared/ai';
+import type { Personality, ThinkingComplexity } from '@shared/ai';
 import type { Action } from '@shared/engine/types';
 import type { PlayerView } from '@shared/engine/view';
 
@@ -10,12 +10,22 @@ export interface LogEntry {
   text: string;
 }
 
+export interface LastMove {
+  seat: number;
+  text: string;
+  turn: number;
+}
+
 export interface DriverSnapshot {
   view: PlayerView;
   log: LogEntry[];
   names: [string, string];
   personalities: (Personality | null)[];
   thinking: boolean;
+  /** reflects bot deliberation depth on the current turn */
+  thinkingMood?: ThinkingComplexity;
+  /** latest player action caption for quiet live tabletop feedback */
+  lastMove?: LastMove | null;
   /** pvp extras — absent in LocalDriver */
   seat?: number | null;
   turnDeadline?: number;

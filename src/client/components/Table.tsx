@@ -11,9 +11,9 @@ import {
 } from 'react';
 import { AnimatePresence, LayoutGroup, motion, useAnimationControls } from 'motion/react';
 import { GOODS, PLAYER_COUNT, RULE_META, SEALS_TO_WIN, CAMEL_BONUS } from '@shared/engine';
-import type { Action, Card, CardType, RuleOptions } from '@shared/engine';
+import type { Action, BonusTier, Card, CardType, Good, RuleOptions } from '@shared/engine';
 import type { PublicPlayer } from '@shared/engine/view';
-import type { Personality } from '@shared/ai';
+import type { Personality, ThinkingComplexity } from '@shared/ai';
 import type { DriverSnapshot, LogEntry } from '../game/driver';
 import { formatTokens, rupeesToTokens } from '@shared/format';
 import { cardColor, typeName } from './CardView';
@@ -60,7 +60,7 @@ export interface TableProps {
 
 export function Table(props: TableProps) {
   const { snap } = props;
-  const { view, names, thinking } = snap;
+  const { view, names, thinking, thinkingMood, lastMove } = snap;
   const spectator = props.spectator ?? false;
 
   const seen = useRef<Set<string>>(new Set());
@@ -115,12 +115,26 @@ export function Table(props: TableProps) {
 
   const inferred = useMemo(() => inferAction(view, sel), [view, sel]);
 
+  // Live sell preview target for highlighting the exact tokens & bonus stack on the board
+  const sellPreview = useMemo<{ good: Good; count: number; bonusTier: BonusTier | null } | null>(() => {
+    if (!myTurn || !inferred.check?.ok || inferred.action?.type !== 'sell') return null;
+    const firstId = inferred.action.cardIds[0];
+    const card = me.hand?.find((c) => c.id === firstId);
+    if (!card || card.type === 'camel') return null;
+    const count = inferred.action.cardIds.length;
+    const tier: BonusTier | null = count >= 5 ? 5 : count === 4 ? 4 : count === 3 ? 3 : null;
+    return {
+      good: card.type,
+      count,
+      bonusTier: tier && view.bonusPileCounts[tier] > 0 ? tier : null,
+    };
+  }, [myTurn, inferred, me.hand, view.bonusPileCounts]);
+
   const myGoodsTokens = me.goodsTokens;
   const myRupees =
     myGoodsTokens.reduce((a, t) => a + t.value, 0) +
     me.bonusTokens.reduce((a, t) => a + (t.value ?? 0), 0);
-  /* hand sorted by goods order (stable) — resorting animates via the
-     TravelCard FLIP since keyed cards keep their identity */
+
   const handList: { id: string; card: Card | null }[] = useMemo(() => {
     const list = me.hand
       ? me.hand.map((c) => ({ id: c.id, card: c as Card | null }))
@@ -174,13 +188,11 @@ export function Table(props: TableProps) {
 
   const askExit = () => (props.confirmExit ? setExitAsk(true) : props.onExit());
 
-  /* discard pile: click-to-browse when the rule allows it (S3: public info) */
+  /* discard pile: click-to-browse when the rule allows it */
   const canBrowseDiscard = view.rules.discardBrowsable && view.discardCount > 0;
   const discardTitle = view.rules.discardBrowsable
     ? undefined
     : '本局规则：弃牌堆不可翻看';
-  /* plain render helper (not a component) so children keep their identity
-     across renders — a component defined here would remount every render */
   const discardPile = (boxClass: string | undefined, children: ReactNode) =>
     canBrowseDiscard ? (
       <button
@@ -199,12 +211,13 @@ export function Table(props: TableProps) {
 
   /* ── rails ── */
   const goodsRows = GOODS.map((g) => ({ good: g, pile: view.goodsPiles[g] }));
+  const depletedCount = goodsRows.filter((r) => r.pile.length === 0).length;
 
   const rail = (key: string, icon: ReactNode, chips: ReactNode, count: number) => (
-    <div className={css.railRow} key={key}>
+    <div className={`${css.railRow} ${count === 0 ? css.railRowEmpty : ''}`} key={key}>
       {icon}
       <span className={css.rowChips}>
-        {count > 0 ? chips : <span className={css.railEmpty}>取完</span>}
+        {count > 0 ? chips : <span className={css.railEmpty}>已售空</span>}
       </span>
       {count > 0 && <span className={css.railCount}>×{count}</span>}
     </div>
@@ -214,16 +227,21 @@ export function Table(props: TableProps) {
     rail(
       r.good,
       <span className={css.railGlyph} style={{ color: cardColor(r.good) }}>
-        <Glyph type={r.good} size={20} />
+        <Glyph type={r.good} size={18} />
       </span>,
       r.pile.map((t, i) => (
         <span key={t.id} style={{ position: 'relative', zIndex: r.pile.length - i }}>
-          <TokenChip token={t} plain />
+          <TokenChip
+            token={t}
+            plain
+            preview={sellPreview?.good === r.good && i < sellPreview.count}
+          />
         </span>
       )),
       r.pile.length,
     ),
   );
+
   const bonusRail = ([3, 4, 5] as const).map((tier) => {
     const n = view.bonusPileCounts[tier];
     const layers = Math.min(4, n);
@@ -240,7 +258,7 @@ export function Table(props: TableProps) {
                 style={{ '--o': i, zIndex: i } as CSSProperties}
               >
                 {i === layers - 1 ? (
-                  <BonusPileChip tier={tier} />
+                  <BonusPileChip tier={tier} preview={sellPreview?.bonusTier === tier} />
                 ) : (
                   <span className={css.bonusBack} />
                 )}
@@ -251,16 +269,27 @@ export function Table(props: TableProps) {
         {n > 0 ? (
           <span className={css.railCount}>×{n}</span>
         ) : (
-          <span className={css.railEmpty}>取完</span>
+          <span className={css.railEmpty}>空</span>
         )}
       </div>
     );
   });
 
+  const hasSelection =
+    sel.marketCamels || sel.marketGoods.size > 0 || sel.hand.size > 0 || sel.giveCamels > 0;
+  const oppBeat =
+    !hasSelection && !invalid && !thinking && lastMove && lastMove.seat === opp ? lastMove.text : null;
+
   const status = spectator
     ? '旁观中 · 座位空出后可在房间里坐下'
     : (snap.netError ??
-      (thinking ? '对手行动中…' : ((invalid ?? inferred.status) || '拿取 · 交换 · 卖出')));
+      (thinking
+        ? thinkingMood === 'deep'
+          ? '对手正在权衡局势…'
+          : '对手行动中…'
+        : ((invalid ?? (hasSelection ? inferred.status : null) ?? oppBeat ?? inferred.status) ||
+          '拿取 · 交换 · 卖出')));
+
   const showButtons =
     !spectator &&
     myTurn &&
@@ -269,10 +298,10 @@ export function Table(props: TableProps) {
 
   return (
     <main className={css.page}>
-      <div className={css.topbar}>
+      <header className={css.topbar}>
         <div className={css.topLeft}>
           <span className={css.wordmark}>Jaipur</span>
-          <span className={css.roundLabel}>第 {view.round} 轮</span>
+          <span className={css.roundPill}>第 {view.round} 轮</span>
           {spectator && <span className={css.specPill}>旁观中</span>}
         </div>
         <div className={css.topRight}>
@@ -309,7 +338,7 @@ export function Table(props: TableProps) {
             ⋯
           </button>
         </div>
-      </div>
+      </header>
 
       <FacePrev.Provider value={facePrev.current}>
         <LayoutGroup>
@@ -322,6 +351,7 @@ export function Table(props: TableProps) {
               isTurn={playing && view.current === opp}
               offline={props.oppOffline ?? null}
               thinking={thinking}
+              thinkingMood={thinkingMood}
               timer={
                 props.timer && view.current === opp && playing ? props.timer : null
               }
@@ -332,21 +362,25 @@ export function Table(props: TableProps) {
             {/* mobile 2×3 goods summary above the table */}
             <div className={css.mobileRails}>
               {goodsRows.map((r) => (
-                <div key={r.good} className={css.mobileRailCell}>
+                <div
+                  key={r.good}
+                  className={`${css.mobileRailCell} ${r.pile.length === 0 ? css.mobileRailEmpty : ''}`}
+                >
                   <span className={css.railGlyph} style={{ color: cardColor(r.good) }}>
                     <Glyph type={r.good} size={14} />
                   </span>
                   <span>
                     {r.pile.length > 0
                       ? `${r.pile[0]!.value}K ×${r.pile.length}`
-                      : '取完'}
+                      : '售空'}
                   </span>
                 </div>
               ))}
             </div>
 
-            {/* the slab */}
+            {/* the architectural game mat */}
             <div className={css.table}>
+              <div className={css.tableFrame} aria-hidden="true" />
               <div className={css.tableHead}>
                 <div className={css.headPiles}>
                   <div className={css.headPile}>
@@ -373,71 +407,81 @@ export function Table(props: TableProps) {
                   {` · 骆驼 ${formatTokens(rupeesToTokens(CAMEL_BONUS))}`}
                 </div>
               </div>
+
               <div className={css.tableRow}>
-                <div className={css.rail}>
-                  <div className={css.railHead}>货物代币 · K</div>
+                <div className={css.railLeft}>
+                  <div className={css.railHeader}>
+                    <span className={css.railHead}>货物代币 · K</span>
+                    <span className={`${css.depBadge} ${depletedCount >= 2 ? css.depWarn : ''}`}>
+                      售空 {depletedCount}/3
+                    </span>
+                  </div>
                   {goodsRail}
                 </div>
-                <div className={css.wells}>
-                  {view.market.map((c, i) => (
-                    <div key={i} className={css.well}>
-                      <TravelCard
-                        card={c}
-                        id={c.id}
-                        faceDown={false}
-                        isNew={isNew.has(c.id)}
-                        selected={
-                          c.type === 'camel' ? sel.marketCamels : sel.marketGoods.has(c.id)
-                        }
-                        invalid={invalidIds.includes(c.id)}
-                        selectable={myTurn}
-                        onClick={() => clickMarket(c)}
-                        ariaLabel={`${typeName(c.type)}，市场第 ${i + 1} 张`}
-                        z={5 + i}
-                      />
-                    </div>
-                  ))}
-                </div>
-                <div className={css.rail}>
-                  {bonusRail}
-                  <div className={css.bonusRow}>
-                    <CamelToken />
-                  </div>
-                </div>
-              </div>
-              <div className={css.piles}>
-                <div className={css.pile}>
-                  <div className={css.pileBox}>
-                    <DeckBack tag="c" />
-                    <DeckBack tag="d" />
-                    <DeckBack tag="e" />
-                  </div>
-                  <span className={css.pileLabel}>牌堆 {view.deckCount}</span>
-                </div>
-                <div className={css.pile}>
-                  {discardPile(
-                    css.pileBox,
-                    view.discard.length === 0 ? (
-                      <div className={css.emptyWell} />
-                    ) : (
-                      view.discard.slice(-3).map((c, i) => (
+
+                <div className={css.marketCol}>
+                  <div className={css.wells}>
+                    {view.market.map((c, i) => (
+                      <div key={i} className={css.well}>
                         <TravelCard
-                          key={c.id}
                           card={c}
                           id={c.id}
                           faceDown={false}
-                          isNew={false}
-                          selectable={false}
-                          mini
-                          z={i}
-                          /* inline style beats TravelCard's own `position:'relative'`,
-                             restoring the tidy 3px-offset stack */
-                          style={{ position: 'absolute', left: i * 3, top: i * 3 }}
+                          isNew={isNew.has(c.id)}
+                          selected={
+                            c.type === 'camel' ? sel.marketCamels : sel.marketGoods.has(c.id)
+                          }
+                          invalid={invalidIds.includes(c.id)}
+                          selectable={myTurn}
+                          onClick={() => clickMarket(c)}
+                          ariaLabel={`${typeName(c.type)}，市场第 ${i + 1} 张`}
+                          z={5 + i}
                         />
-                      ))
-                    ),
-                  )}
-                  <span className={css.pileLabel}>弃牌 {view.discardCount}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className={css.piles}>
+                    <div className={css.pile}>
+                      <div className={css.pileBox}>
+                        <DeckBack tag="c" />
+                        <DeckBack tag="d" />
+                        <DeckBack tag="e" />
+                      </div>
+                      <span className={css.pileLabel}>牌堆 {view.deckCount}</span>
+                    </div>
+                    <div className={css.pile}>
+                      {discardPile(
+                        css.pileBox,
+                        view.discard.length === 0 ? (
+                          <div className={css.emptyWell} />
+                        ) : (
+                          view.discard.slice(-3).map((c, i) => (
+                            <TravelCard
+                              key={c.id}
+                              card={c}
+                              id={c.id}
+                              faceDown={false}
+                              isNew={false}
+                              selectable={false}
+                              mini
+                              z={i}
+                              style={{ position: 'absolute', left: i * 3, top: i * 3 }}
+                            />
+                          ))
+                        ),
+                      )}
+                      <span className={css.pileLabel}>弃牌 {view.discardCount}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className={css.railRight}>
+                  <div className={css.railHead}>奖励</div>
+                  {bonusRail}
+                  <div className={css.camelSlot}>
+                    <CamelToken />
+                  </div>
                 </div>
               </div>
             </div>
@@ -455,8 +499,7 @@ export function Table(props: TableProps) {
                 idPrefix="seat"
               />
             ) : (
-              <div className={css.tray}>
-                {myTurn && <div className={css.trayGlow} />}
+              <div className={`${css.tray} ${myTurn ? css.trayActive : ''}`}>
                 <div className={css.herdGroup}>
                   <HerdStack
                     herdIds={me.herdIds}
@@ -478,73 +521,76 @@ export function Table(props: TableProps) {
                   )}
                 </div>
 
-              <div
-                className={`${css.hand} ${handList.length > 5 ? css.tight : ''}`}
-                style={{ '--n': handList.length } as CSSProperties}
-              >
-                {handList.map((h, i) => (
-                  <div key={h.id} className={css.handCard} style={{ '--i': i } as CSSProperties}>
-                    <TravelCard
-                      card={h.card ?? fakeCard('leather')}
-                      id={h.id}
-                      faceDown={h.card === null}
-                      isNew={isNew.has(h.id)}
-                      selected={h.card !== null && sel.hand.has(h.id)}
-                      invalid={invalidIds.includes(h.id)}
-                      selectable={myTurn && h.card !== null}
-                      onClick={() => clickHand(h.id)}
-                      ariaLabel={
-                        h.card ? `${typeName(h.card.type)}，手牌第 ${i + 1} 张` : `手牌第 ${i + 1} 张`
-                      }
-                    />
-                  </div>
-                ))}
-              </div>
-
-              <div className={css.panel}>
-                <div className={css.panelSide}>
-                  <span className={css.panelName}>你</span>
-                  <span className={css.panelSeals}>
-                    {Array.from({ length: SEALS_TO_WIN }, (_, i) => (
-                      <Seal key={i} earned={i < me.seals} animate={false} />
-                    ))}
-                  </span>
+                <div
+                  className={`${css.hand} ${handList.length > 5 ? css.tight : ''}`}
+                  style={{ '--n': handList.length } as CSSProperties}
+                >
+                  {handList.map((h, i) => (
+                    <div key={h.id} className={css.handCard} style={{ '--i': i } as CSSProperties}>
+                      <TravelCard
+                        card={h.card ?? fakeCard('leather')}
+                        id={h.id}
+                        faceDown={h.card === null}
+                        isNew={isNew.has(h.id)}
+                        selected={h.card !== null && sel.hand.has(h.id)}
+                        invalid={invalidIds.includes(h.id)}
+                        selectable={myTurn && h.card !== null}
+                        onClick={() => clickHand(h.id)}
+                        ariaLabel={
+                          h.card ? `${typeName(h.card.type)}，手牌第 ${i + 1} 张` : `手牌第 ${i + 1} 张`
+                        }
+                      />
+                    </div>
+                  ))}
                 </div>
-                <div className={css.panelStats}>
-                  <span className={css.stat}>
-                    <span className={css.statLabel}>货物</span>
-                    <span className={css.statVal}>{formatTokens(rupeesToTokens(myRupees))}</span>
-                    <span className={css.goodsMini}>
-                      {GOODS.map((g) => {
-                        const n = myGoodsTokens.filter((t) => t.good === g).length;
-                        if (!n) return null;
-                        return (
-                          <span
-                            key={g}
-                            className={css.goodsItem}
-                            style={{ '--c': cardColor(g) } as CSSProperties}
-                          >
-                            <Glyph type={g} size={12} />
-                            {n}
-                          </span>
-                        );
-                      })}
-                    </span>
-                  </span>
-                  <span className={css.stat}>
-                    <span className={css.statLabel}>奖励</span>
-                    <span className={css.statVal}>×{me.bonusTokens.length}</span>
-                    <span className={css.statChips}>
-                      {me.bonusTokens.map((b) => (
-                        <BonusChip key={b.id} bonus={b} />
+
+                <div className={css.panel}>
+                  <div className={css.panelSide}>
+                    <div className={css.panelTitleRow}>
+                      <span className={css.panelName}>你</span>
+                      {myTurn && <span className={css.turnTag}>你的回合</span>}
+                    </div>
+                    <span className={css.panelSeals}>
+                      {Array.from({ length: SEALS_TO_WIN }, (_, i) => (
+                        <Seal key={i} earned={i < me.seals} animate={false} />
                       ))}
                     </span>
-                  </span>
+                  </div>
+                  <div className={css.panelStats}>
+                    <span className={css.stat}>
+                      <span className={css.statLabel}>货物</span>
+                      <span className={css.statVal}>{formatTokens(rupeesToTokens(myRupees))}</span>
+                      <span className={css.goodsMini}>
+                        {GOODS.map((g) => {
+                          const n = myGoodsTokens.filter((t) => t.good === g).length;
+                          if (!n) return null;
+                          return (
+                            <span
+                              key={g}
+                              className={css.goodsItem}
+                              style={{ '--c': cardColor(g) } as CSSProperties}
+                            >
+                              <Glyph type={g} size={12} />
+                              {n}
+                            </span>
+                          );
+                        })}
+                      </span>
+                    </span>
+                    <span className={css.stat}>
+                      <span className={css.statLabel}>奖励</span>
+                      <span className={css.statVal}>×{me.bonusTokens.length}</span>
+                      <span className={css.statChips}>
+                        {me.bonusTokens.map((b) => (
+                          <BonusChip key={b.id} bonus={b} />
+                        ))}
+                      </span>
+                    </span>
+                  </div>
+                  {props.timer && view.current === seat && playing && (
+                    <TimerBar deadline={props.timer.deadline} totalMs={props.timer.totalMs} />
+                  )}
                 </div>
-                {props.timer && view.current === seat && playing && (
-                  <TimerBar deadline={props.timer.deadline} totalMs={props.timer.totalMs} />
-                )}
-              </div>
               </div>
             )}
 
@@ -555,10 +601,11 @@ export function Table(props: TableProps) {
               </div>
             ) : (
               <div className={css.bar}>
-                <p className={css.status}>
+                <p className={`${css.status} ${oppBeat ? css.statusBeat : ''}`}>
                   {inferred.preview && !invalid && inferred.check?.ok ? (
                     <>
-                      <em>{inferred.preview}</em> {inferred.status}
+                      <em className={css.previewBadge}>{inferred.preview}</em>
+                      <span>{inferred.status}</span>
                     </>
                   ) : (
                     status
@@ -692,8 +739,6 @@ export function Table(props: TableProps) {
 
 /* ── helpers ── */
 
-/** Seat strip: mini face-down fan + herd stack + name/chip/seals + stats.
-    Used for the opponent (top) and, for spectators, the bottom seat (V9). */
 function PlayerStrip({
   player,
   name,
@@ -701,6 +746,7 @@ function PlayerStrip({
   isTurn,
   offline = null,
   thinking = false,
+  thinkingMood = 'normal',
   timer = null,
   isNew,
   idPrefix,
@@ -711,16 +757,16 @@ function PlayerStrip({
   isTurn: boolean;
   offline?: number | null;
   thinking?: boolean;
+  thinkingMood?: ThinkingComplexity;
   timer?: { deadline: number; totalMs: number } | null;
   isNew: (id: string) => boolean;
-  /** namespaces synthetic herd-card ids so two strips never share FLIP keys */
   idPrefix: string;
 }) {
   const rupees =
     player.goodsTokens.reduce((a, t) => a + t.value, 0) +
     player.bonusTokens.reduce((a, t) => a + (t.value ?? 0), 0);
   return (
-    <div className={`${css.oppStrip} ${isTurn ? css.turnGlow : ''}`}>
+    <div className={`${css.oppStrip} ${isTurn ? css.turnActive : ''}`}>
       <div className={css.oppFan}>
         {player.handIds.map((id, i) => (
           <TravelCard
@@ -753,7 +799,12 @@ function PlayerStrip({
           {offline ? (
             <OfflineNote deadline={offline} />
           ) : (
-            thinking && <span className={css.thinking}>思考中 · · ·</span>
+            thinking && (
+              <span className={css.thinking}>
+                <span className={css.thinkDot} aria-hidden="true" />
+                {thinkingMood === 'deep' ? '思考中 · 权衡' : '思考中'}
+              </span>
+            )
           )}
         </div>
         <div className={css.oppStats}>
@@ -789,8 +840,6 @@ function PlayerStrip({
   );
 }
 
-/** Compact camel stack: 3px vertical offsets, ≤6 visible, top card face-up,
-    count badge. Falls back to generic camel cards when ids are hidden. */
 function HerdStack({
   herdIds,
   herdCount,
@@ -812,14 +861,15 @@ function HerdStack({
   if (ids.length === 0) return <div className={css.emptyWell} />;
   const visible = ids.slice(-6);
   return (
-    <div className={css.herdStack}>
+    <div
+      className={css.herdStack}
+      style={{ '--layers': visible.length } as CSSProperties}
+    >
       {visible.map((id, i) => (
         <TravelCard
           key={id}
           card={fakeCard('camel')}
           id={id}
-          /* herd camels are public — every layer stays face-up so no
-             card-back band peeks above the stack */
           faceDown={false}
           isNew={isNew(id)}
           selectable={false}
@@ -847,7 +897,6 @@ function LogList({ log }: { log: LogEntry[] }) {
   );
 }
 
-/** Read-only rules summary — also used on the Home rules sheet and the room screen. */
 export function RulesContent({ rules }: { rules: RuleOptions }) {
   return (
     <div className={css.rulesList}>
@@ -873,9 +922,6 @@ function DeckBack({ tag }: { tag: string }) {
   return <CardView card={c.current} faceDown mini selectable={false} />;
 }
 
-/* last painted rect per card id — drives the manual FLIP travel animation.
-   (layoutId/shared-element projection intermittently pins transforms when a
-   card remounts in another container; measuring rects ourselves is exact.) */
 const travelRects = new Map<string, { x: number; y: number }>();
 
 function TravelCard({
@@ -908,15 +954,12 @@ function TravelCard({
   const [down, setDown] = useState(isNew);
   useEffect(() => {
     if (!isNew) return;
-    const t = setTimeout(() => setDown(false), 170 + Math.random() * 90);
+    const t = setTimeout(() => setDown(false), 160 + Math.random() * 80);
     return () => clearTimeout(t);
   }, [isNew]);
   const facePrev = useContext(FacePrev);
-  // the deal-flip only applies to cards whose destination is face-up —
-  // face-down targets (opponent fan, deck) must stay backs
   const effDown = faceDown ? true : isNew ? down : false;
   const wasUp = facePrev.get(id);
-  // face changed across this remount → flip mid-flight (R5)
   const flipFrom =
     !isNew && wasUp !== undefined && wasUp === effDown
       ? wasUp
@@ -924,7 +967,6 @@ function TravelCard({
         : 'down'
       : undefined;
 
-  /* manual FLIP: snap to the card's previous rect, then spring to 0 */
   const controls = useAnimationControls();
   const elRef = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {

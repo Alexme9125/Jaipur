@@ -7,10 +7,15 @@ import { ThemeToggle } from './ThemeToggle';
 import css from './Setup.module.css';
 
 const PERSONAS: Personality[] = ['cautious', 'balanced', 'aggressive'];
-const DOT: Record<Personality, string> = {
+const TONE: Record<Personality, string> = {
   cautious: 'var(--persona-cautious)',
   balanced: 'var(--persona-balanced)',
   aggressive: 'var(--persona-aggressive)',
+};
+const TAGLINE: Record<Personality, string> = {
+  cautious: '控场守成',
+  balanced: '审时度势',
+  aggressive: '高危连击',
 };
 
 export function Setup(props: {
@@ -28,26 +33,37 @@ export function Setup(props: {
     <div className={css.wrap}>
       <ThemeToggle floating />
       <div className={css.sheet}>
-        <h2 className={css.title}>人机练习</h2>
-        <p className={css.sub}>选择对手人格。斋普尔规则，先得 2 印赢下整场。</p>
+        <header className={css.head}>
+          <h2 className={css.title}>人机练习</h2>
+          <p className={css.sub}>挑选对手风格。三位对手均会记牌与博弈，先得 2 印赢下整场。</p>
+        </header>
 
         <div className={css.personaRow} role="radiogroup" aria-label="对手人格">
-          {PERSONAS.map((p) => (
-            <button
-              key={p}
-              type="button"
-              className={css.persona}
-              aria-pressed={persona === p}
-              onClick={() => setPersona(p)}
-            >
-              <span className={css.personaName}>
-                <span className={css.personaDot} style={{ background: DOT[p] }} />
-                {PERSONALITY_META[p].label}
-              </span>
-              <span className={css.personaBlurb}>{PERSONALITY_META[p].blurb}</span>
-              <span className={css.personaBot}>对手：{botNameFor(p)}</span>
-            </button>
-          ))}
+          {PERSONAS.map((p) => {
+            const name = botNameFor(p);
+            const active = persona === p;
+            return (
+              <button
+                key={p}
+                type="button"
+                className={css.persona}
+                aria-pressed={active}
+                style={{ '--tone': TONE[p] } as React.CSSProperties}
+                onClick={() => setPersona(p)}
+              >
+                <span className={css.personaTop}>
+                  <span className={css.monogram}>{name.slice(0, 1)}</span>
+                  <span className={css.personaMeta}>
+                    <span className={css.personaBot}>{name}</span>
+                    <span className={css.personaTag}>
+                      {PERSONALITY_META[p].label} · {TAGLINE[p]}
+                    </span>
+                  </span>
+                </span>
+                <span className={css.personaBlurb}>{PERSONALITY_META[p].blurb}</span>
+              </button>
+            );
+          })}
         </div>
 
         <button
@@ -57,11 +73,11 @@ export function Setup(props: {
           onClick={() => setRulesOpen((v) => !v)}
         >
           <span>规则开关</span>
-          <span>{rulesOpen ? '收起 ▴' : '展开 ▾'}</span>
+          <span className={css.rulesArrow}>{rulesOpen ? '收起 ▴' : '展开 ▾'}</span>
         </button>
 
         {rulesOpen && (
-          <div>
+          <div className={css.rulesBody}>
             {RULE_META.filter((m) => m.key !== 'turnTimer').map((m) => (
               <div className={css.ruleRow} key={m.key}>
                 <span className={css.ruleLabel}>
@@ -76,13 +92,15 @@ export function Setup(props: {
                 />
               </div>
             ))}
-            <TextButton onClick={() => setRules({ ...DEFAULT_RULES })}>恢复官方默认</TextButton>
+            <div className={css.resetRow}>
+              <TextButton onClick={() => setRules({ ...DEFAULT_RULES })}>恢复官方默认</TextButton>
+            </div>
           </div>
         )}
 
         <div className={css.actions}>
           <button type="button" className={css.back} onClick={props.onBack}>
-            ← 返回
+            返回大厅
           </button>
           <PrimaryButton onClick={() => props.onStart(persona, rules)}>开始对局</PrimaryButton>
         </div>
